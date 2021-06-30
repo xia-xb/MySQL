@@ -106,3 +106,139 @@ select concat('a','b','c') as 结果;
 select concat(last_name,first_name) as 姓名 from employees;
 ```
 
+## ifnull函数
+
+判断某字段或表达式是否为null，如果为null返回指定的值，否则返回原来的值
+
+```sql
+select ifnull(commission_pct,0) from employees;
+```
+
+## isnull函数
+
+判断某字段或表达式是否为null，如果是，返回1，否则返回0
+
+# 条件查询
+
+语法
+
+```sql
+select 查询列表 from 表名 where 筛选条件;
+```
+
+顺序
+
+1. from 表名
+2. where 筛选条件
+3. select 查询列表
+
+分类：
+
+- 按条件表达式筛选（条件运算符：>  <  =  !=  <>  <=  >=）
+- 按逻辑表达式筛选（逻辑运算符：&&  ||  !  and  or  not）
+- 模糊查询（like      between and      in      is null）
+
+## 按条件表达式筛选
+
+```sql
+#查询工资>12000的员工信息
+select * from employees where salary>12000;
+#查询编号不等于90号的员工和部门编号
+select last_name,department_id from employees where department_id!=90;
+select last_name,department_id from employees where department_id<>90;
+```
+
+## 按逻辑表达式筛选
+
+==用于连接条件表达式==
+
+```sql
+#查询工资在10000到20000之间的员工名、工资以及奖金
+select last_name,salary,commision_pct from emplyees where salary>=10000 and salary<=20000;
+#查询部门标号不是在90到110之间，或者工资高于15000的员工信息
+select * from employees where not(department_id>=90 and department_id<=110) or salary>=15000;
+```
+
+## 模糊查询
+
+like  between and   in   is null | is not null
+
+### like
+
+特点
+
+- ==通常与通配符搭配使用，可以判断字符型或数值型==
+  - %任意多个字符，包含0个字符
+  - _任意单个字符
+
+==当like中出现_等特殊字符时，可以用转义字符，且转义字符可以自定义，用escape指明转义字符==
+
+```sql
+#查询员工名中包含字符a的员工信息
+select * from employees where last_name like '%a%';
+#%标识通配符
+#
+select last_name,salary from employees where last_name like '__n_l%';
+#查询员工名中第二个字符为_的员工名
+select last_name from employees where last_name like '_\_%'; 
+select last_name from employees where last_name like '_$_%' escape '$';
+```
+
+### between and
+
+注意事项
+
+- 使用between and可以提高语句的简洁度 
+- 包含临界值
+- 两个临界值不能调换顺序
+
+```sql
+#查询员工编号在100到120之间的员工信息
+select * from employees where employee_id>=100 and employee_id<=120;
+select * from employees where employee_id between 100 and 120;
+```
+
+### in
+
+用于判断某字段的值是否属于in列表中的某一项
+
+特点：
+
+- 提高语句简洁度
+- in列表的值类型必须一致或兼容
+- ==不支持通配符==
+
+```sql
+#查询员工的工种编号是IT_PROG,AD_VP,AD_PRES中的一个员工名和工种编号
+select last_name,job_id from employees where job_id='IT_PROG' job_id='AD_VP' or job_id='AD_PRES';
+select last_name,job_id from employees where job_id in ('IT_PROG','AD_VP' ,'AD_PRES');
+```
+
+### is null
+
+===或<>不能用于判断null==
+
+==is null和is not null可以用于判断null==
+
+```sql
+#查询没有奖金的员工名和奖金率
+select last_name,commission_pct from employees where commission_pct is null;
+#查询有奖金的员工名和奖金率
+select last_name,commission_pct from employees where commission_pct is not null;
+```
+
+
+
+### 安全等于
+
+<=>
+
+==可读性较差==
+
+```sql
+#判断null
+select last_name,commission_pct from employees where commission_pct <=> null;
+#查询工资为12000的员工信息
+select last_name,salary from employees where salary <=>12000;
+```
+
