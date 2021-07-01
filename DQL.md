@@ -242,3 +242,69 @@ select last_name,commission_pct from employees where commission_pct <=> null;
 select last_name,salary from employees where salary <=>12000;
 ```
 
+# 排序查询
+
+语法
+
+```sql
+select 查询列表 from 表 where 筛选条件 order by 排序列表[asc|desc]
+
+#案例 查询员工信息，要求工资从高到低排序
+select * from employees order by salary desc;
+select * from employees order by salary asc;
+```
+
+特点：
+
+- asc代表升序，desc代表降序，如果不写，==默认是升序==
+- order by子句中可以支持单个字段、多个字段、表达式、函数、别名
+- order by子句一般是放在查询语句的最后面，但limit子句除外
+
+```sql
+#案例 查询部门编号>=90的员工信息，按入职时间的先后进行排序
+select * from employees where department_id>=90 order by hiredate asc;
+#案例 按表达式排序
+#按年薪的高低显示员工的信息和年薪（按表达式排序）
+select * ,salary*12*(1+ifnull(commission_pct,0)) as 年薪 from employees order bysalary*12*(1+ifnull(commission_pct,0)) desc;
+#案例 按年薪的高低显示员工的信息和年薪（按别名排序）
+select * ,salary*12*(1+ifnull(commission_pct,0)) as 年薪 from employees order 年薪 desc;
+#案例 按姓名的长度显示员工的姓名和工资（按函数排序）
+select length(last_name) as 字节长度,last_name,salart from employees order by length(last_name) desc;
+#案例 查询员工信息，要求先按工资排序，再按员工编号排序（按多个字段排序）
+select * from empolyees order by salary asc,employee_id desc;
+```
+
+测试题
+
+```sql
+#查询员工的姓名和部门号和年薪，按年薪降序，按姓名升序
+SELECT 
+last_name AS 姓名,
+department_id AS 部门号,
+salary*12*(1+IFNULL(commission_pct,0)) AS 年薪
+FROM employees
+ORDER BY
+年薪 DESC,
+姓名 ASC;
+#选择工资不在8000到17000的员工的姓名和工资，按工资降序
+SELECT
+last_name AS 姓名,
+salary AS 工资
+FROM
+employees
+WHERE 
+salary NOT BETWEEN 8000 AND 17000
+ORDER BY
+salary DESC;
+#查询邮箱中包含e的员工信息，先按有限的字节数降序，再按部门号升序
+SELECT
+*
+FROM
+employees
+WHERE
+email LIKE '%e%'
+ORDER BY
+LENGTH(email) DESC,
+department_id ASC;
+```
+
